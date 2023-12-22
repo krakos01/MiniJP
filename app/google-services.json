@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "234481899744",
+    "project_id": "minijp-48ce9",
+    "storage_bucket": "minijp-48ce9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:234481899744:android:576a93b3e653df984b5885",
+        "android_client_info": {
+          "package_name": "com.krakos.minijp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBq4poTTUjQw904_ltK0YEEIONJ4v8yxuY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
