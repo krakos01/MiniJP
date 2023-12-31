@@ -16,7 +16,8 @@ data class Word(
     @SerializedName("is_common") val isCommon: Boolean,
     val jlpt: List<String>,
     val japanese: List<Japanese>,
-    @SerializedName("senses") val translations: List<Translation>
+    @SerializedName("senses") val translations: List<Translation>,
+    @SerializedName("tags") val wanikaniLevel: List<String>
 )
 
 
@@ -25,23 +26,23 @@ val sampleWord =
         "乗り物 ",
         true,
         listOf("jlpt-n5"),
-        listOf(Japanese("乗り物a", "かてい")),
+        listOf(Japanese("乗り物a乗り物乗", "かてい")),
         listOf(
             Translation(
                 listOf("home", "household","family","hearth"),
                 listOf("Noun"),
-                listOf("wanikani12")
+                listOf("")
             ),
             Translation(
                 listOf("home", "household","family","hearth"),
                 listOf("Wikipedia definition"),
-                listOf("wanikani0")
+                listOf("")
             ),
             Translation(
                 listOf("car"),
                 listOf("Noun"),
-                listOf("wanikani3")
+                listOf("")
             )
-
-        )
+        ),
+        listOf("wanikani12")
     )

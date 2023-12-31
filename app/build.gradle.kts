@@ -4,10 +4,10 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 
     // Google services plugin
-    id("com.google.gms.google-services")
+    // ("com.google.gms.google-services")
 
     // Crashlytics plugin
-    id("com.google.firebase.crashlytics")
+    // id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -61,7 +61,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.activity:activity-compose:1.8.2")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")

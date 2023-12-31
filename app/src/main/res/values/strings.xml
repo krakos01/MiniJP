@@ -5,6 +5,7 @@
     <string name="back_arrow">Back arrow</string>
     <string name="search">Search</string>
     <string name="info_icon">Information about search tags</string>
+    <string name="common">common</string>
 
     <!-- Placeholders -->
     <string name="search_placeholder">flower #verb #noun</string>

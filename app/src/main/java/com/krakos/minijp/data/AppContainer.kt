@@ -3,7 +3,6 @@ package com.krakos.minijp.data
 import com.krakos.minijp.network.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 
 interface AppContainer {
     val dataRepository: DataRepository
