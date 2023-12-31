@@ -7,4 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Tag cards colors -->
+    <color name="common_tag">#FF8ABC83</color>
+    <color name="jlpt_tag">#FF909DC0</color>
+    <color name="wanikani_tag">#FFFF6865</color>
 </resources>

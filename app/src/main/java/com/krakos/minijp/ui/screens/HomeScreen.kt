@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,24 +38,29 @@ fun HomeScreen(viewModel: MiniJpViewModel, miniJpUiState: MiniJpUiState) {
     when (miniJpUiState) {
         is MiniJpUiState.Loading -> LoadingScreen()
         is MiniJpUiState.Error -> ErrorScreen()
-        is MiniJpUiState.SuccessDetailsScreen -> TODO() //DetailsScreen()
-        is MiniJpUiState.SuccessHomeScreen -> WordsList(words = miniJpUiState.words)
+        is MiniJpUiState.SuccessDetailsScreen -> DetailsScreen(item = miniJpUiState.word)
+        is MiniJpUiState.SuccessHomeScreen ->
+            WordsList(words = miniJpUiState.words, onWordClick = viewModel::getDetails)
     }
 }
 
 
 @Composable
-fun WordCard(item: Word) {
+fun WordBox(
+    item: Word,
+    onWordClick: (Word) -> Unit
+) {
     val word = item.japanese[0].word
-    var reading = "【 ${item.japanese[0].reading} 】"
+    var reading =
+        if (!item.japanese[0].reading.isNullOrEmpty()) "【 ${item.japanese[0].reading} 】"
+        else ""
 
-    Box( // Card
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 4.dp)
             .wrapContentHeight()
-            .clickable {  } // todo
-        //shape = RoundedCornerShape(5)
+            .clickable { onWordClick(item) } // todo
 
     ) {
         Column(
@@ -65,7 +71,6 @@ fun WordCard(item: Word) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                   //.weight(1f),
             ) {
                 if (!word.isNullOrEmpty()) {
                     Text(
@@ -136,19 +141,20 @@ fun AlternativeWordCard(
     }
 }
 
+
 @Composable
 fun WordsList(
     words: Items,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onWordClick: (Word) -> Unit
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.padding(bottom = 4.dp)
     ) {
         this.items(words.words) { word ->
-            //WordCard(word = word) { TODO("Details screen not yet implemented") }
             Divider(modifier = Modifier.padding(8.dp, 0.dp, 8.dp, 8.dp))
-            WordCard(item = word)
+            WordBox(item = word) { onWordClick(word) }
         }
     }
 }
@@ -169,7 +175,7 @@ fun WordTranslations(
 
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         goodTranslations.forEach {
@@ -177,7 +183,8 @@ fun WordTranslations(
                 Text(
                     text = it.partsOfSpeech.toString().removeSurrounding("[","]"),
                     style = MaterialTheme.typography.labelSmall,
-                    fontSize = 10.sp
+                    fontSize = 10.sp,
+                    color = Color.Gray
                 )
                 Row {
                     Text(
@@ -203,7 +210,7 @@ fun WordTranslations(
 //@Preview(showSystemUi = true)
 @Composable
 fun WordCardPreview() {
-    WordCard(item = sampleWord)
+    WordBox(item = sampleWord) {}
 }
 
 @Preview(showSystemUi = true)
@@ -211,7 +218,7 @@ fun WordCardPreview() {
 fun HomeScreenPreview() {
     Column {
         repeat(7) {
-            WordCard(item = sampleWord)
+            WordBox(item = sampleWord) {}
             Divider(modifier = Modifier.padding(8.dp, 0.dp, 8.dp, 8.dp))
         }
     }

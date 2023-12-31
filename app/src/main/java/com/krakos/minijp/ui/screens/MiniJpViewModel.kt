@@ -14,7 +14,6 @@ import com.krakos.minijp.MiniJpApplication
 import com.krakos.minijp.data.DataRepository
 import com.krakos.minijp.model.Items
 import com.krakos.minijp.model.Word
-import com.krakos.minijp.ui.SearchDialog
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -34,6 +33,17 @@ class MiniJpViewModel(private val dataRepository: DataRepository): ViewModel() {
         private set
 
 
+    fun getDetails(item: Word) {
+        viewModelScope.launch {
+            miniJpUiState = MiniJpUiState.Loading
+            try {
+                miniJpUiState = MiniJpUiState.SuccessDetailsScreen(item)
+            } catch (e: NullPointerException) {
+                miniJpUiState = MiniJpUiState.Error
+                Log.e("ui_state_error", e.toString())
+            }
+        }
+    }
 
     fun getWords(query: String) {
         viewModelScope.launch {
