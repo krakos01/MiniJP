@@ -1,6 +1,7 @@
 package com.krakos.minijp.ui
 
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +48,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.minijp.R
 import com.krakos.minijp.ui.screens.HomeScreen
-import com.krakos.minijp.ui.screens.MiniJpViewModel
 import kotlin.random.Random
 
 
@@ -130,11 +131,12 @@ fun MiniJpTopBar(
 fun SearchDialog(
     searchValue: String,
     onSearchValueChange: (String) -> Unit,
-    onSearchClick: (String) -> Unit,
+    onSearchClick: (Context, String) -> Unit,
     onDismiss: () -> Unit,
     onFilterClick: () -> Unit,
     filterOptions: List<String>
 ) {
+    val context = LocalContext.current
 
     Dialog(onDismissRequest = { onDismiss() }) {
         Column(
@@ -152,7 +154,7 @@ fun SearchDialog(
                 onValueChange = { onSearchValueChange(it) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = {
-                    onSearchClick(searchValue)
+                    onSearchClick(context, searchValue)
                     onDismiss()
                 }),
                 leadingIcon = {
@@ -211,7 +213,7 @@ fun SearchDialogPreview() {
     SearchDialog(
         searchValue = "",
         onSearchValueChange = {},
-        onSearchClick = {},
+        onSearchClick = { _, _ ->},
         onDismiss = {},
         onFilterClick = {},
         filterOptions = listOf("jlpt-n5","jlpt-n4","jlpt-n3","jlpt-n2","jlpt-n1", "common")

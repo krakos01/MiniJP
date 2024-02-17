@@ -141,7 +141,7 @@ fun Tag(modifier: Modifier = Modifier, tag: String = "", commonTag: Boolean = fa
     Card(
         colors = CardDefaults
             .cardColors(containerColor = colorResource(id = bgColor)),
-        modifier = modifier.width(110.dp)//.padding(hori)
+        modifier = modifier.width(110.dp)
     ) {
         Text(
             text = formattedTag,

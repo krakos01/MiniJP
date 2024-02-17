@@ -14,15 +14,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,16 +30,21 @@ import com.krakos.minijp.model.Items
 import com.krakos.minijp.model.Translation
 import com.krakos.minijp.model.Word
 import com.krakos.minijp.model.sampleWord
+import com.krakos.minijp.ui.MiniJpUiState
+import com.krakos.minijp.ui.MiniJpViewModel
 
 
 @Composable
 fun HomeScreen(viewModel: MiniJpViewModel, miniJpUiState: MiniJpUiState) {
+    val lastQueryExists = !viewModel.isSearchFileEmpty(context = LocalContext.current)
+
     when (miniJpUiState) {
         is MiniJpUiState.Loading -> LoadingScreen()
-        is MiniJpUiState.Error -> ErrorScreen()
         is MiniJpUiState.SuccessDetailsScreen -> DetailsScreen(item = miniJpUiState.word)
         is MiniJpUiState.SuccessHomeScreen ->
             WordsList(words = miniJpUiState.words, onWordClick = viewModel::getDetails)
+        is MiniJpUiState.Error ->
+            ErrorScreen(lastQueryExists = lastQueryExists, onTryAgain = viewModel::retrySearch)
     }
 }
 
@@ -94,6 +98,7 @@ fun WordBox(
     }
 } 
 
+/* Will be deleted soon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,6 +145,7 @@ fun AlternativeWordCard(
         }
     }
 }
+*/
 
 
 @Composable
@@ -179,7 +185,8 @@ fun WordTranslations(
         modifier = Modifier.fillMaxWidth()
     ) {
         goodTranslations.forEach {
-            Column() {
+            Column(
+            ) {
                 Text(
                     text = it.partsOfSpeech.toString().removeSurrounding("[","]"),
                     style = MaterialTheme.typography.labelSmall,
@@ -191,13 +198,16 @@ fun WordTranslations(
                         text = it.englishDefinitions.toString().removeSurrounding("[", "]"),
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
                     if (translations.size>2 && it == goodTranslations.last()) {
-                        Spacer(modifier = Modifier.weight(1f))
                         Text(
                             text = "${translations.size - 2} more",
                             style = MaterialTheme.typography.labelSmall,
+                            maxLines = 1,
+                            textAlign = TextAlign.Right,
+                            modifier = Modifier.width(70.dp),
                         )
                     }
                 }

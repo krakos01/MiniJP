@@ -1,5 +1,6 @@
-package com.krakos.minijp.ui.screens
+package com.krakos.minijp.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +13,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.krakos.minijp.MiniJpApplication
 import com.krakos.minijp.data.DataRepository
+import com.krakos.minijp.data.FileUtils
 import com.krakos.minijp.model.Items
 import com.krakos.minijp.model.Word
 import kotlinx.coroutines.launch
@@ -27,7 +29,7 @@ sealed interface MiniJpUiState {
 
 class MiniJpViewModel(private val dataRepository: DataRepository): ViewModel() {
 
-    // SuccessHomeScreen, because app don't load words immediately after launching
+    // SuccessHomeScreen is default - app don't load words immediately after launching
     var miniJpUiState:
             MiniJpUiState by mutableStateOf(MiniJpUiState.SuccessHomeScreen(Items(listOf())))
         private set
@@ -45,11 +47,12 @@ class MiniJpViewModel(private val dataRepository: DataRepository): ViewModel() {
         }
     }
 
-    fun getWords(query: String) {
+    fun getWords(context: Context, query: String) {
         viewModelScope.launch {
             miniJpUiState = MiniJpUiState.Loading
             try {
                 miniJpUiState = MiniJpUiState.SuccessHomeScreen(dataRepository.allWordsData(query))
+                FileUtils.appendSearch(context, query)
             } catch (e: IOException) {
                 miniJpUiState = MiniJpUiState.Error
                 Log.e("ui_state_error", e.toString())
@@ -59,6 +62,19 @@ class MiniJpViewModel(private val dataRepository: DataRepository): ViewModel() {
             }
         }
     }
+
+    /**
+     * Tries getting data using last used query, if there is no last query then nothing happens.
+     */
+    fun retrySearch(context: Context) {
+        val lastQuery: String? = FileUtils.getLastSearch(context)
+        if (!lastQuery.isNullOrEmpty()) {
+            getWords(context, lastQuery)
+        }
+    }
+
+
+    fun isSearchFileEmpty(context: Context) = FileUtils.getSearches(context).isEmpty()
 
 
     companion object {
