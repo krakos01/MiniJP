@@ -21,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,6 +34,7 @@ import com.krakos.minijp.model.Word
 import com.krakos.minijp.model.sampleWord
 import com.krakos.minijp.ui.MiniJpUiState
 import com.krakos.minijp.ui.MiniJpViewModel
+import com.minijp.R
 
 
 @Composable
@@ -64,7 +67,7 @@ fun WordBox(
             .fillMaxWidth()
             .padding(horizontal = 4.dp)
             .wrapContentHeight()
-            .clickable { onWordClick(item) } // todo
+            .clickable { onWordClick(item) }
 
     ) {
         Column(
@@ -72,6 +75,7 @@ fun WordBox(
                 .padding(8.dp, 4.dp)
                 .fillMaxWidth(),
         ) {
+            WordTagRepresentation(word = item)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -96,7 +100,21 @@ fun WordBox(
             )
         }
     }
-} 
+}
+
+@Composable
+fun WordTagRepresentation( word: Word) {
+    Row {
+        if (word.isCommon)
+            Text(text = "•", fontWeight = FontWeight.Bold, color = colorResource(id = R.color.common_tag))
+        if (word.jlpt.isNotEmpty())
+            Text(text = "•", fontWeight = FontWeight.Bold, color = colorResource(id = R.color.jlpt_tag))
+        if (word.wanikaniLevel.isNotEmpty())
+            Text(text = "•", fontWeight = FontWeight.Bold, color = colorResource(id = R.color.wanikani_tag))
+    }
+}
+
+
 
 /* Will be deleted soon
 
@@ -169,7 +187,7 @@ fun WordsList(
 @Composable
 fun WordTranslations(
     translations: List<Translation>,
-    modifier: Modifier = Modifier
+    // modifier: Modifier = Modifier
 ) {
     val goodTranslations =
         when (translations.size) {
@@ -216,12 +234,6 @@ fun WordTranslations(
     }
 }
 
-
-//@Preview(showSystemUi = true)
-@Composable
-fun WordCardPreview() {
-    WordBox(item = sampleWord) {}
-}
 
 @Preview(showSystemUi = true)
 @Composable

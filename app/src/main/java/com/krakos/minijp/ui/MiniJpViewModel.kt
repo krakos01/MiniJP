@@ -76,6 +76,20 @@ class MiniJpViewModel(private val dataRepository: DataRepository): ViewModel() {
 
     fun isSearchFileEmpty(context: Context) = FileUtils.getSearches(context).isEmpty()
 
+    fun goBackToHomeScreen(query: String) {
+        viewModelScope.launch {
+            miniJpUiState = MiniJpUiState.Loading
+            try {
+                miniJpUiState = MiniJpUiState.SuccessHomeScreen(dataRepository.allWordsData(query))
+            } catch (e: IOException) {
+                miniJpUiState = MiniJpUiState.Error
+                Log.e("ui_state_error", e.toString())
+            } catch (e: HttpException) {
+                miniJpUiState = MiniJpUiState.Error
+                Log.e("ui_state_error", e.toString())
+            }
+        }
+    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

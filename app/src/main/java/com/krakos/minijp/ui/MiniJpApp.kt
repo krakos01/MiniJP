@@ -1,7 +1,6 @@
 package com.krakos.minijp.ui
 
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -46,8 +46,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.minijp.R
+import com.krakos.minijp.model.Items
 import com.krakos.minijp.ui.screens.HomeScreen
+import com.minijp.R
 import kotlin.random.Random
 
 
@@ -57,13 +58,24 @@ fun MiniJpApp() {
     val miniJpVM: MiniJpViewModel = viewModel(factory = MiniJpViewModel.Factory)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     var showSearchDialog by remember { mutableStateOf(true) }
-    var searchValue by remember { mutableStateOf("") }
+    val uiState = miniJpVM.miniJpUiState
+    val context = LocalContext.current
+
+    // Query used in SearchDialog, used to display input string
+    var newQuery by remember { mutableStateOf("") }
+
+    // Query used in MiniJpTopBar, used to display search string, after hitting 'search' button
+    var searchQuery by remember { mutableStateOf("") }
+
 
     if (showSearchDialog) {
         SearchDialog(
-            searchValue = searchValue,
-            onSearchValueChange = { searchValue = it },
-            onSearchClick = miniJpVM::getWords,
+            searchValue = newQuery,
+            onSearchValueChange = { newQuery = it },
+            onSearchClick = {
+                searchQuery = newQuery
+                miniJpVM.getWords(context, newQuery)
+            },
             onDismiss = { showSearchDialog = false },
             onFilterClick = { /* TODO */ },
             filterOptions = listOf()
@@ -73,10 +85,11 @@ fun MiniJpApp() {
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { MiniJpTopBar(
+            uiState = uiState,
             scrollBehavior = scrollBehavior,
-            searchValue = searchValue,
-            onBackClick = { /* TODO */ },
-            onSearchClick = { showSearchDialog = true })
+            searchValue = searchQuery,
+            onBackClick =  miniJpVM::goBackToHomeScreen
+        ) { showSearchDialog = true }
         }
     ) {
         Surface(
@@ -94,21 +107,33 @@ fun MiniJpApp() {
 @Composable
 fun MiniJpTopBar(
     modifier: Modifier = Modifier,
+    uiState: MiniJpUiState,
     scrollBehavior: TopAppBarScrollBehavior,
     searchValue: String,
-    onBackClick: ()->Unit,
+    onBackClick: (String) -> Unit,
     onSearchClick: ()->Unit
 ) {
     CenterAlignedTopAppBar(
         scrollBehavior = scrollBehavior,
         title = {
-            Text(text = searchValue)
+            Text(text = searchValue, maxLines = 1)
         },
         navigationIcon = {
-            IconButton(onClick = { onBackClick() }) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = stringResource(id = R.string.back_arrow))
+            if (uiState is MiniJpUiState.SuccessDetailsScreen) {
+                IconButton(onClick = { onBackClick(searchValue) }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = stringResource(id = R.string.back_arrow)
+                    )
+                }
+            }
+            else {
+                IconButton(onClick = { onBackClick(searchValue) }) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = stringResource(id = R.string.back_arrow)
+                    )
+                }
             } },
         actions = {
             IconButton(onClick = onSearchClick) {
@@ -131,13 +156,11 @@ fun MiniJpTopBar(
 fun SearchDialog(
     searchValue: String,
     onSearchValueChange: (String) -> Unit,
-    onSearchClick: (Context, String) -> Unit,
+    onSearchClick: () -> Unit,
     onDismiss: () -> Unit,
     onFilterClick: () -> Unit,
     filterOptions: List<String>
 ) {
-    val context = LocalContext.current
-
     Dialog(onDismissRequest = { onDismiss() }) {
         Column(
             modifier = Modifier.background(MaterialTheme.colorScheme.background)
@@ -154,7 +177,7 @@ fun SearchDialog(
                 onValueChange = { onSearchValueChange(it) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = {
-                    onSearchClick(context, searchValue)
+                    onSearchClick()
                     onDismiss()
                 }),
                 leadingIcon = {
@@ -175,8 +198,8 @@ fun SearchDialog(
                     FilterChip(
                         selected = Random.nextBoolean(),
                         onClick = { onFilterClick() },
-                        label = { Text(text = it)
-                        })
+                        label = { Text(text = it) }
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -199,6 +222,7 @@ fun SearchDialog(
 @Composable
 fun MiniJpTopBarPreview() {
     MiniJpTopBar(
+        uiState = MiniJpUiState.SuccessHomeScreen(Items(listOf())),
         scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
         onBackClick = {},
         onSearchClick = {},
@@ -207,13 +231,13 @@ fun MiniJpTopBarPreview() {
 }
 
 
-@Preview()
+@Preview
 @Composable
 fun SearchDialogPreview() {
     SearchDialog(
         searchValue = "",
         onSearchValueChange = {},
-        onSearchClick = { _, _ ->},
+        onSearchClick = {},
         onDismiss = {},
         onFilterClick = {},
         filterOptions = listOf("jlpt-n5","jlpt-n4","jlpt-n3","jlpt-n2","jlpt-n1", "common")

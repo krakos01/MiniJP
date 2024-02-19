@@ -5,7 +5,11 @@
     <string name="back_arrow">Back arrow</string>
     <string name="search">Search</string>
     <string name="info_icon">Information about search tags</string>
-    <string name="common">common</string>
+    <string name="app_icon">App icon</string>
+
+
+    <!-- Content -->
+    <string name="common">Common</string>
     <string name="retry">Retry</string>
     <string name="retry_no_last_query">There are no previous queries saved</string>
 
