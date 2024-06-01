@@ -1,4 +1,3 @@
-Opening website only for a quick word search is troublesome, especially with dozens other tabs in the background. 
 This app aims to provide some basic <i>jisho.org</i> functions, but with no intent to replace it.
 
 
