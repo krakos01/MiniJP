@@ -1,5 +1,4 @@
-This app aims to provide some basic <i>jisho.org</i> functions, but with no intent to replace it.
-
+Only basic functions: word translations and tags
 
 ### Screenshots
 <img src="https://github.com/krakos01/MiniJP/assets/62389231/203c0286-e53b-4e76-b484-756104619ca7" height=720)>
