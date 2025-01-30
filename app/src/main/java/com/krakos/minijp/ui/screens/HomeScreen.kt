@@ -1,6 +1,8 @@
 package com.krakos.minijp.ui.screens
 
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,10 +16,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -39,11 +49,17 @@ import com.minijp.R
 
 @Composable
 fun HomeScreen(viewModel: MiniJpViewModel, miniJpUiState: MiniJpUiState) {
+    var showExitDialog by remember { mutableStateOf(false) }
     val lastQueryExists = !viewModel.isSearchFileEmpty(context = LocalContext.current)
+
+    // Handle back button
+    BackHandler { showExitDialog = true }
+    if (showExitDialog) ExitDialog { showExitDialog = false }
 
     when (miniJpUiState) {
         is MiniJpUiState.Loading -> LoadingScreen()
-        is MiniJpUiState.SuccessDetailsScreen -> DetailsScreen(item = miniJpUiState.word)
+        is MiniJpUiState.SuccessDetailsScreen ->
+            DetailsScreen(item = miniJpUiState.word, onBackPressed = viewModel::goBackToHomeScreen)
         is MiniJpUiState.SuccessHomeScreen ->
             WordsList(words = miniJpUiState.words, onWordClick = viewModel::getDetails)
         is MiniJpUiState.Error ->
@@ -232,6 +248,29 @@ fun WordTranslations(
             }
         }
     }
+}
+
+
+@Composable
+fun ExitDialog(
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        icon = { Icons.Default.Warning },
+        onDismissRequest = { onDismiss },
+        confirmButton = {
+            val context = LocalContext.current
+            Button(onClick = { (context as Activity).finishAffinity() }) {
+                Text("Exit app")
+            }
+        },
+        dismissButton = {
+            Button(onClick = { onDismiss() }) {
+                Text("Cancel")
+            }
+        },
+        title = { Text("Do you want to exit the app?") }
+    )
 }
 
 
